@@ -39,7 +39,6 @@
 .legend .i1{background:#E8F1FB;border:1px solid #A9C7E8;}
 .legend .i2{background:#FDF3E2;border:1px solid #E8C9A0;}
 .legend .i3{background:#FFF3DC;border:1px solid #F5C17B;}
-.note{font-size:11px;color:#9CA3AF;margin-top:6px;line-height:1.6;}
 </style>
 
 <div class="cal-head">
@@ -60,7 +59,7 @@
   <span><i class="i3"></i>33C/33W 机型（A330-300）</span>
   <span>灰格 = 该日无IST航班</span>
 </div>
-<div class="note">口径：时间为IST当地时间；班期以出发日计。2026-10-01至10-24为实际执飞航班（来源：航班计划报表数据-进港/出港，原表时间为北京时间，已换算为IST时间）；2026-10-25起为冬航季计划（2026-10-25 至 2027-03-28）。默认显示2026年10月，可点击 ‹ › 切换月份。每格内往返航班合并为一行，如「CZ679/680 78C·广州 落06:40 起15:50」（机型·执管基地取自数据表「排班机型」「运营基地」列及源表「执管」「机型」列）。CZ6035/6036 的起飞若在次日凌晨，与 CZ6035 同日显示并标注「+1」，如「CZ6035/6036 33W·北京 落22:25 起01:15 +1」。橙色标记 = 33C/33W 机型（A330-300；33W 为跟机放行）。行尾「补」= 用户提供实际执飞班次（非计划表）：2027-03-28 CZ8066 起14:25；2026-10-25 CZ8065 落07:10 已由航班计划报表数据证实。悬停可查看完整信息。数据来源：2026年冬航季航班计划总表（当地时）+ 航班计划报表数据-进港/出港（北京时间）IST航节。</div>
+
 
 <script>
 (function(){
@@ -92,11 +91,24 @@ function render(){
   nextBtn.disabled = (idx === months.length-1);
   var days = DATA.months[m] || {};
   var dayKeys = Object.keys(days);
-  var totalLegs = 0, zeroDays = 0;
-  dayKeys.forEach(function(k){ totalLegs += days[k].length; });
+  var zeroDays = 0;
   var dim = new Date(y, mo, 0).getDate();
   for (var d=1; d<=dim; d++){ if(!days[d]) zeroDays++; }
-  stat.textContent = "本月航节日 " + totalLegs + " · 无IST航班日 " + zeroDays + " 天";
+  function dayRows(evs){
+    var grps = [{a:null,b:null},{a:null,b:null},{a:null,b:null}];
+    var solo = 0;
+    evs.forEach(function(ev){
+      var pi = pairIdx[ev[0]];
+      if (pi === undefined) { solo++; return; }
+      if (ev[1] === "落") { grps[pi].a = ev; } else { grps[pi].b = ev; }
+    });
+    var n = solo;
+    for (var i=0;i<pairs.length;i++){ if (grps[i].a || grps[i].b) n++; }
+    return n;
+  }
+  var totalFlights = 0;
+  dayKeys.forEach(function(k){ totalFlights += dayRows(days[k]); });
+  stat.textContent = "本月航班量 " + totalFlights + " 班 · 无IST航班日 " + zeroDays + " 天";
   var first = new Date(y, mo-1, 1);
   var off = (first.getDay()+6)%7; // 周一=0
   var cells = [];
