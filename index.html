@@ -26,7 +26,8 @@
 .fl{font-size:11px;line-height:1.5;margin-bottom:2px;}
 .fl .fl1{white-space:nowrap;}
 .fl b{font-weight:bold;color:#1F2937;}
-.fl .fl2{font-size:11px;color:#4B5563;font-weight:bold;margin-top:1px;}
+.fl .fl2{white-space:nowrap;margin-top:1px;}
+.fl .fl3{color:#4B5563;font-weight:bold;margin-top:1px;}
 .lan{display:inline-block;padding:0 4px;border-radius:3px;margin-left:3px;font-weight:bold;}
 .lan.in{background:#E8F1FB;color:#1F4E79;}
 .lan.out{background:#FDF3E2;color:#8A5A00;}
@@ -145,11 +146,13 @@ function render(){
         var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
         var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '>';
         row += '<div class="fl1"><b>' + fname + '</b>';
-        if (g.a) { row += '<span class="lan in">落' + g.a[2] + '</span>'; }
-        if (g.b) { row += '<span class="lan out">起' + g.b[2] + (g.b[6] ? ' +1' : '') + '</span>'; }
         if ((g.a && g.a[3] === "supp") || (g.b && g.b[3] === "supp")) { row += '<span class="sup">补</span>'; }
         row += '</div>';
-        if (acd && bs) { row += '<div class="fl2">' + acd + '·' + bs.split("(")[0] + '</div>'; }
+        row += '<div class="fl2">';
+        if (g.a) { row += '<span class="lan in">落' + g.a[2] + '</span>'; }
+        if (g.b) { row += '<span class="lan out">起' + g.b[2] + (g.b[6] ? ' +1' : '') + '</span>'; }
+        row += '</div>';
+        if (acd && bs) { row += '<div class="fl3">' + acd + '·' + bs.split("(")[0] + '</div>'; }
         row += '</div>';
         fls += row;
       }
@@ -162,11 +165,13 @@ function render(){
         var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
         var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '>';
         row += '<div class="fl1"><b>' + ev[0] + '</b>';
-        if (ev[1] === "落") { row += '<span class="lan in">落' + ev[2] + '</span>'; }
-        else { row += '<span class="lan out">起' + ev[2] + (ev[6] ? ' +1' : '') + '</span>'; }
         if (ev[3] === "supp") { row += '<span class="sup">补</span>'; }
         row += '</div>';
-        if (acd && bs) { row += '<div class="fl2">' + acd + '·' + bs.split("(")[0] + '</div>'; }
+        row += '<div class="fl2">';
+        if (ev[1] === "落") { row += '<span class="lan in">落' + ev[2] + '</span>'; }
+        else { row += '<span class="lan out">起' + ev[2] + (ev[6] ? ' +1' : '') + '</span>'; }
+        row += '</div>';
+        if (acd && bs) { row += '<div class="fl3">' + acd + '·' + bs.split("(")[0] + '</div>'; }
         row += '</div>';
         fls += row;
       });
