@@ -57,10 +57,10 @@
 <div class="legend">
   <span><i class="i1"></i>落地IST（到达时刻）</span>
   <span><i class="i2"></i>IST起飞（出发时刻）</span>
-  <span><i class="i3"></i>33W 机型（跟机放行）</span>
+  <span><i class="i3"></i>33C/33W 机型（A330-300）</span>
   <span>灰格 = 该日无IST航班</span>
 </div>
-<div class="note">口径：时间为IST当地时间；班期以出发日计。2026-10-01至10-24为实际执飞航班（来源：航班计划报表数据-进港/出港，原表时间为北京时间，已换算为IST时间）；2026-10-25起为冬航季计划（2026-10-25 至 2027-03-28）。默认显示2026年10月，可点击 ‹ › 切换月份。每格内往返航班合并为一行，如「CZ679/680 78C·广州 落06:40 起15:50」（机型·执管基地取自数据表「排班机型」「运营基地」列及源表「执管」「机型」列）。CZ6035/6036 的起飞若在次日凌晨，与 CZ6035 同日显示并标注「+1」，如「CZ6035/6036 33W·北京 落22:25 起01:15 +1」。橙色标记 = 33W 机型（跟机放行）。行尾「补」= 用户提供实际执飞班次（非计划表）：2027-03-28 CZ8066 起14:25；2026-10-25 CZ8065 落07:10 已由航班计划报表数据证实。悬停可查看完整信息。数据来源：2026年冬航季航班计划总表（当地时）+ 航班计划报表数据-进港/出港（北京时间）IST航节。</div>
+<div class="note">口径：时间为IST当地时间；班期以出发日计。2026-10-01至10-24为实际执飞航班（来源：航班计划报表数据-进港/出港，原表时间为北京时间，已换算为IST时间）；2026-10-25起为冬航季计划（2026-10-25 至 2027-03-28）。默认显示2026年10月，可点击 ‹ › 切换月份。每格内往返航班合并为一行，如「CZ679/680 78C·广州 落06:40 起15:50」（机型·执管基地取自数据表「排班机型」「运营基地」列及源表「执管」「机型」列）。CZ6035/6036 的起飞若在次日凌晨，与 CZ6035 同日显示并标注「+1」，如「CZ6035/6036 33W·北京 落22:25 起01:15 +1」。橙色标记 = 33C/33W 机型（A330-300；33W 为跟机放行）。行尾「补」= 用户提供实际执飞班次（非计划表）：2027-03-28 CZ8066 起14:25；2026-10-25 CZ8065 落07:10 已由航班计划报表数据证实。悬停可查看完整信息。数据来源：2026年冬航季航班计划总表（当地时）+ 航班计划报表数据-进港/出港（北京时间）IST航节。</div>
 
 <script>
 (function(){
@@ -79,6 +79,7 @@ var nextBtn = document.getElementById("next");
 if (!grid || !mLabel || !stat || !prevBtn || !nextBtn) { return; }
 var metaMap = {};
 (DATA.flights || []).forEach(function(f){ metaMap[f.f] = f; });
+var AC_TYPE = {"33C":"A330-300","33W":"A330-300","78C":"B787-9","78Z":"B787-9","3WC":"A330-300"};
 var pairs = [["CZ679", "CZ680"], ["CZ6035", "CZ6036"], ["CZ8065", "CZ8066"]];
 var pairIdx = {};
 pairs.forEach(function(p, i){ pairIdx[p[0]] = i; pairIdx[p[1]] = i; });
@@ -127,8 +128,8 @@ function render(){
         var bs = base[5] || (mm && mm.base) || "";
         var fname = g.a && g.b ? pairs[gi][0] + "/" + pairs[gi][1] : base[0];
         var mt = ac ? '<span class="mt">' + ac + '·' + bs.split("(")[0] + '</span>' : "";
-        var tip = ' title="' + base[0] + ' · 机型 ' + ac + ' · 执管基地 ' + bs + '"';
-        var w33 = (ac || "").indexOf("33W") >= 0;
+        var tip = ' title="' + base[0] + ' · 机型 ' + ac + (AC_TYPE[ac] ? ' ' + AC_TYPE[ac] : '') + ' · 执管基地 ' + bs + '"';
+        var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
         var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '><b>' + fname + '</b>' + mt;
         if (g.a) { row += '<span class="lan in">落' + g.a[2] + '</span>'; }
         if (g.b) { row += '<span class="lan out">起' + g.b[2] + (g.b[6] ? ' +1' : '') + '</span>'; }
@@ -141,8 +142,8 @@ function render(){
         var ac = ev[4] || (mm && mm.type) || "";
         var bs = ev[5] || (mm && mm.base) || "";
         var mt = ac ? '<span class="mt">' + ac + '·' + bs.split("(")[0] + '</span>' : "";
-        var tip = ' title="' + ev[0] + ' · 机型 ' + ac + ' · 执管基地 ' + bs + '"';
-        var w33 = (ac || "").indexOf("33W") >= 0;
+        var tip = ' title="' + ev[0] + ' · 机型 ' + ac + (AC_TYPE[ac] ? ' ' + AC_TYPE[ac] : '') + ' · 执管基地 ' + bs + '"';
+        var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
         var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '><b>' + ev[0] + '</b>' + mt;
         if (ev[1] === "落") { row += '<span class="lan in">落' + ev[2] + '</span>'; }
         else { row += '<span class="lan out">起' + ev[2] + (ev[6] ? ' +1' : '') + '</span>'; }
