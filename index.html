@@ -18,14 +18,15 @@
 .cal-scroll{width:100%;overflow-x:auto;}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;min-width:620px;}
 .g-head{text-align:center;font-size:12px;font-weight:bold;color:#6B7280;padding:4px 0;background:#EEF2F7;border-radius:4px;}
-.cell{min-height:74px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:4px;padding:4px 5px;box-sizing:border-box;}
+.cell{min-height:118px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:4px;padding:4px 5px;box-sizing:border-box;}
 .cell.other{background:#F9FAFB;}
 .cell .day{font-size:11px;font-weight:bold;color:#374151;margin-bottom:3px;}
 .cell .day.wk{color:#C0392B;}
 .cell.empty{background:#FBFBFB;border-style:dashed;}
-.fl{font-size:11px;line-height:1.5;white-space:nowrap;}
+.fl{font-size:11px;line-height:1.5;margin-bottom:2px;}
+.fl .fl1{white-space:nowrap;}
 .fl b{font-weight:bold;color:#1F2937;}
-.fl .mt{color:#4B5563;font-weight:bold;margin-left:4px;}
+.fl .fl2{font-size:10px;color:#4B5563;font-weight:bold;margin-top:1px;}
 .lan{display:inline-block;padding:0 4px;border-radius:3px;margin-left:3px;font-weight:bold;}
 .lan.in{background:#E8F1FB;color:#1F4E79;}
 .lan.out{background:#FDF3E2;color:#8A5A00;}
@@ -78,7 +79,7 @@ var nextBtn = document.getElementById("next");
 if (!grid || !mLabel || !stat || !prevBtn || !nextBtn) { return; }
 var metaMap = {};
 (DATA.flights || []).forEach(function(f){ metaMap[f.f] = f; });
-var AC_TYPE = {"33C":"A330-300","33W":"A330-300","78C":"B787-9","78Z":"B787-9","3WC":"A330-300"};
+var AC_DISP = {"33C":"A330","33W":"A330","78C":"B787-9","78Z":"B787-9","78C/78Z":"B787-9","3WC":"A330"};
 var pairs = [["CZ679", "CZ680"], ["CZ6035", "CZ6036"], ["CZ8065", "CZ8066"]];
 var pairIdx = {};
 pairs.forEach(function(p, i){ pairIdx[p[0]] = i; pairIdx[p[1]] = i; });
@@ -139,13 +140,16 @@ function render(){
         var ac = base[4] || (mm && mm.type) || "";
         var bs = base[5] || (mm && mm.base) || "";
         var fname = g.a && g.b ? pairs[gi][0] + "/" + pairs[gi][1] : base[0];
-        var mt = ac ? '<span class="mt">' + ac + '·' + bs.split("(")[0] + '</span>' : "";
-        var tip = ' title="' + base[0] + ' · 机型 ' + ac + (AC_TYPE[ac] ? ' ' + AC_TYPE[ac] : '') + ' · 执管基地 ' + bs + '"';
+        var acd = AC_DISP[ac] || ac || "";
+        var tip = ' title="' + base[0] + ' · 机型 ' + ac + ' · 执管基地 ' + bs + '"';
         var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
-        var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '><b>' + fname + '</b>' + mt;
+        var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '>';
+        row += '<div class="fl1"><b>' + fname + '</b>';
         if (g.a) { row += '<span class="lan in">落' + g.a[2] + '</span>'; }
         if (g.b) { row += '<span class="lan out">起' + g.b[2] + (g.b[6] ? ' +1' : '') + '</span>'; }
         if ((g.a && g.a[3] === "supp") || (g.b && g.b[3] === "supp")) { row += '<span class="sup">补</span>'; }
+        row += '</div>';
+        if (acd && bs) { row += '<div class="fl2">' + acd + '·' + bs.split("(")[0] + '</div>'; }
         row += '</div>';
         fls += row;
       }
@@ -153,13 +157,16 @@ function render(){
         var mm = metaMap[ev[0]];
         var ac = ev[4] || (mm && mm.type) || "";
         var bs = ev[5] || (mm && mm.base) || "";
-        var mt = ac ? '<span class="mt">' + ac + '·' + bs.split("(")[0] + '</span>' : "";
-        var tip = ' title="' + ev[0] + ' · 机型 ' + ac + (AC_TYPE[ac] ? ' ' + AC_TYPE[ac] : '') + ' · 执管基地 ' + bs + '"';
+        var acd = AC_DISP[ac] || ac || "";
+        var tip = ' title="' + ev[0] + ' · 机型 ' + ac + ' · 执管基地 ' + bs + '"';
         var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
-        var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '><b>' + ev[0] + '</b>' + mt;
+        var row = '<div class="fl' + (w33 ? ' w33' : '') + '"' + tip + '>';
+        row += '<div class="fl1"><b>' + ev[0] + '</b>';
         if (ev[1] === "落") { row += '<span class="lan in">落' + ev[2] + '</span>'; }
         else { row += '<span class="lan out">起' + ev[2] + (ev[6] ? ' +1' : '') + '</span>'; }
         if (ev[3] === "supp") { row += '<span class="sup">补</span>'; }
+        row += '</div>';
+        if (acd && bs) { row += '<div class="fl2">' + acd + '·' + bs.split("(")[0] + '</div>'; }
         row += '</div>';
         fls += row;
       });
