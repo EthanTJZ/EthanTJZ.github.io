@@ -95,6 +95,7 @@ pairs.forEach(function(p, i){ pairIdx[p[0]] = i; pairIdx[p[1]] = i; });
 
 function render(){
   var m = months[idx];
+  var narrow = (window.innerWidth || document.documentElement.clientWidth) <= 640;
   var y = parseInt(m.slice(0,4),10), mo = parseInt(m.slice(5,7),10);
   mLabel.textContent = y + "年" + mo + "月";
   prevBtn.disabled = (idx === 0);
@@ -148,7 +149,7 @@ function render(){
         var mm = metaMap[base[0]];
         var ac = base[4] || (mm && mm.type) || "";
         var bs = base[5] || (mm && mm.base) || "";
-        var fname = g.a && g.b ? pairs[gi][0] + "/" + pairs[gi][1] : base[0];
+        var fname = g.a && g.b ? pairs[gi][0] + (narrow ? "<br>" : "/") + pairs[gi][1] : base[0];
         var acd = AC_DISP[ac] || ac || "";
         var tip = ' title="' + base[0] + ' · 机型 ' + ac + ' · 执管基地 ' + bs + '"';
         var w33 = (ac || "").indexOf("33C") >= 0 || (ac || "").indexOf("33W") >= 0;
@@ -192,6 +193,8 @@ function render(){
 }
 prevBtn.addEventListener("click", function(){ if(idx>0){ idx--; render(); } });
 nextBtn.addEventListener("click", function(){ if(idx<months.length-1){ idx++; render(); } });
+var rT = null;
+window.addEventListener("resize", function(){ clearTimeout(rT); rT = setTimeout(render, 150); });
 render();
 } catch(e) {}
 })();
